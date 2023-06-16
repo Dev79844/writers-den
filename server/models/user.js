@@ -1,17 +1,20 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 
 const userSchema = new mongoose.Schema({
     username:{
         type:String,
-        required:[true,'Please enter the name']
+        required:[true,'Please enter the name'],
+        unique: true
     },
     email:{
         type:String,
         required:[true,'Please enter your email'],
-        validate: validator.isEmail
+        validate: validator.isEmail,
+        unique:true
     },
     password:{
         type:String,
@@ -36,11 +39,11 @@ const userSchema = new mongoose.Schema({
 },{timestamps:true})
 
 userSchema.pre('save', async function(next){
-    if(!this.modifiedPaths(this.password)) return next()
-    this.password = bcrypt.hash(this.password, 10)
+    if(!this.modifiedPaths('password')) return next()
+    this.password = await bcrypt.hash(this.password, 10)
 })
 
-userSchema.methods.isValidatedPassword() = async function (userPassword){
+userSchema.methods.isValidatedPassword = async function (userPassword){
     return await bcrypt.compare(userPassword, this.password)
 }
 
@@ -50,26 +53,28 @@ userSchema.methods.getJwtToken = function(){
     })
 }
 
-userSchema.methods.isFollowing = async function(id){
-    const idStr = id.toString()
-    for(const followingUser of this.followingUsers){
-        if(followingUser.toString() === idStr){
-            return true
+userSchema.methods.isFollowing = function (id) {
+    const idStr = id.toString();
+    for (let followingUser of this.followingUsers) {
+        if (followingUser.toString() === idStr) {
+            return true;
         }
     }
-    return false
+    return false;
 }
 
 userSchema.methods.follow = function(id){
     if(this.followingUsers.indexOf(id) === -1){
         this.followingUsers.push(id)
     }
+    return this.save()
 }
 
 userSchema.methods.unfollow = function(id){
     if(this.followingUsers.indexOf(id) !== -1){
         this.followingUsers.remove(id)
     }
+    return this.save()
 }
 
 userSchema.methods.isFavourite = function(id){
@@ -85,12 +90,14 @@ userSchema.methods.favourite = function(id){
     if(this.favouriteArticles.indexOf(id) === -1){
         this.favouriteArticles.push(id)
     }
+    return this.save()
 }
 
 userSchema.methods.unfavourite = function(id){
     if(this.favouriteArticles.indexOf(id) !== -1){
         this.favouriteArticles.remove(id)
     }
+    return this.save()
 }
 
 module.exports = mongoose.model('User',userSchema)

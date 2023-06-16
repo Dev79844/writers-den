@@ -10,4 +10,8 @@ app.use(express.urlencoded({extended:true}))
 app.use(morgan('tiny'))
 app.use(cookieParser())
 
+const user = require('./routes/userRoutes')
+
+app.use("/api",user)
+
 module.exports = app
