@@ -11,7 +11,9 @@ app.use(morgan('tiny'))
 app.use(cookieParser())
 
 const user = require('./routes/userRoutes')
+const articles = require('./routes/articleRoutes')
 
 app.use("/api",user)
+app.use("/api/articles",articles)
 
 module.exports = app

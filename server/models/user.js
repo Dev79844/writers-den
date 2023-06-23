@@ -63,6 +63,15 @@ userSchema.methods.isFollowing = function (id) {
     return false;
 }
 
+userSchema.methods.toProfileJSON = function (user) {
+    return {
+        username: this.username,
+        bio: this.bio,
+        image: this.image,
+        following: user ? user.isFollowing(this._id) : false
+    }
+};
+
 userSchema.methods.follow = function(id){
     if(this.followingUsers.indexOf(id) === -1){
         this.followingUsers.push(id)
