@@ -1,6 +1,6 @@
 const express = require('express')
 const {isLoggedIn} = require('../middlewares/user')
-const {createArticle,getArticleBySlug,updateArticle,deleteArticle,listArticles,favoriteArticle,unfavoriteArticle} = require('../controllers/articleControllers')
+const {createArticle,getArticleBySlug,updateArticle,deleteArticle,listArticles,favoriteArticle,unfavoriteArticle,getArticlesForFeed} = require('../controllers/articleControllers')
 
 const router = express.Router()
 
@@ -11,5 +11,6 @@ router.delete("/:slug",isLoggedIn,deleteArticle)
 router.get("/",listArticles)
 router.post("/:slug/favorite", isLoggedIn, favoriteArticle)
 router.delete("/:slug/favorite", isLoggedIn,unfavoriteArticle)
+router.get("/feed", isLoggedIn,getArticlesForFeed)
 
 module.exports = router
