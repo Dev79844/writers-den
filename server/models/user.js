@@ -67,7 +67,6 @@ userSchema.methods.toProfileJSON = function (user) {
     return {
         username: this.username,
         bio: this.bio,
-        image: this.image,
         following: user ? user.isFollowing(this._id) : false
     }
 };

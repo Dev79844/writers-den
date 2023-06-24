@@ -6,6 +6,6 @@ const router = express.Router()
 
 router.post("/:slug/comments",isLoggedIn,createComment)
 router.get("/:slug/comments",getCommentsForArticle)
-router.delete("/:slug/comments/:id",deleteComment)
+router.delete("/:slug/comments/:id",isLoggedIn,deleteComment)
 
 module.exports = router

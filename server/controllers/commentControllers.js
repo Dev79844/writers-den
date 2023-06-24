@@ -55,24 +55,14 @@ exports.getCommentsForArticle = async(req,res) => {
             })
         }
 
-        // if(loggedIn){
-        //     res.status(200).json({
-        //         comment: article.comments.map(async(comment) => {
-        //             const commentObj = await Comment.findById(comment)
-        //             const temp = await commentObj.toCommentResponse(loggedIn)
-        //             return temp;
-        //         })
-        //     })
-        // }else{
-            res.status(200).json({
-                comment: article.comments.map(async(comment) => {
-                    console.log(comment);
-                    const commentObj = await Comment.findById(comment)
-                    const temp = await commentObj.toCommentResponse(false)
-                    return temp;
-                })
-            })
-        // }
+        const comments = await Comment.find({article: article._id})
+
+        return await res.status(200).json({
+            comments: await Promise.all(comments.map(async (comment) => {
+                const temp = await comment.toCommentResponse(false);
+                return temp;
+              }))
+        })
     } catch (error) {
         throw error;
     }
@@ -80,28 +70,28 @@ exports.getCommentsForArticle = async(req,res) => {
 
 exports.deleteComment = async(req,res) => {
     try {
-        const {slug,id} = req.params 
-        const userId = req.user._id
+        const userId = req.user._id;
 
         const commenter = await User.findById(userId)
 
-        if(!commenter){
-            res.status(401).json({
-                message: "User not found"
-            })
+        if (!commenter) {
+            return res.status(401).json({
+                message: "User Not Found"
+            });
         }
+        const { slug, id } = req.params;
 
-        const article = await Article.find({slug})
+        const article = await Article.findOne({slug})
 
-        if(!article){
-            res.status(401).json({
-                message:"Article not found"
-            })
+        if (!article) {
+            return res.status(401).json({
+                message: "Article Not Found"
+            });
         }
 
         const comment = await Comment.findById(id)
 
-        if(comment.author.toString() === commenter._id.toString()){
+        if (comment.author.toString() === commenter._id.toString()) {
             await article.removeComment(comment._id);
             await Comment.deleteOne({ _id: comment._id });
             return res.status(200).json({
