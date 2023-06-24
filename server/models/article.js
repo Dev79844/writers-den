@@ -70,12 +70,20 @@ articleSchema.methods.toArticleResponse = async function (user) {
     }
 }
 
-articleSchema.methods.addComment = function (commentId) {
-    if(this.comments.indexOf(commentId) === -1){
-        this.comments.push(commentId);
+// articleSchema.methods.addComment = function (commentId) {
+//     if(this.comments.indexOf(commentId) === -1){
+//         this.comments.push(commentId);
+//     }
+//     return this.save();
+// };
+
+articleSchema.methods.addComment = function(commentId){
+    console.log(commentId);
+    if(!this.comments.indexOf(commentId) === -1){
+        this.comments.push(commentId)
     }
-    return this.save();
-};
+    return this.save()
+}
 
 articleSchema.methods.removeComment = function (commentId) {
     if(this.comments.indexOf(commentId) !== -1){
