@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  blog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+    ports:
+      - 3000:3000
+    networks:
+      - mongodb
+    environment:
+      - DB=mongodb://mongo:27017/blog
+      - PORT=3000
+      - JWT_SECRET=fnkjfhlewifebjkfhekufhljenfuewtfiuenflknelwtporgibskjvsdgfijlfmdnvjbfhjuyslkgjiotrgidhlk
+      - JWT_EXPIRY=1d
+      - COOKIE_TIME=1
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    command: npm run start
+  mongo:
+    image: mongo:4.2.8
+    networks:
+      - mongodb
+    ports:
+    - 27017:27017
+    volumes:
+    - mongodb:/data/db
+    - mongodb_config:/data/configdb
+volumes:
+ mongodb:
+ mongodb_config:
+networks:
+  mongodb:
+    driver: bridge
