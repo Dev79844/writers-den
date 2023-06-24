@@ -13,9 +13,11 @@ app.use(cookieParser())
 const user = require('./routes/userRoutes')
 const articles = require('./routes/articleRoutes')
 const comment = require('./routes/commentRoutes')
+const tags = require('./routes/tagRoutes')
 
 app.use("/api",user)
 app.use("/api/articles",articles)
 app.use("/api/articles",comment)
+app.use("/api",tags)
 
 module.exports = app
